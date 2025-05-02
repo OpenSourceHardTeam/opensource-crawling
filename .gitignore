@@ -172,3 +172,28 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# 크롬드라이버 로그
+chromedriver.log
+
+# Docker 관련
+*.tar
+docker-compose.override.yml
+
+# 환경 변수 파일 (보안 중요)
+.env
+.env.*
+
+# 크롬 임시 파일
+/tmp/.com.google.Chrome*
+
+# Mac OS 불필요 항목
+.DS_Store
+
+# 결과 캐시 또는 HTML 저장 시
+output/
+*.html
+
+# JetBrains IDE 설정 폴더 무시
+.idea/
+*.iml
