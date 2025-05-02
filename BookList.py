@@ -3,7 +3,7 @@ import json
 from BookDetail import get_publisher_review
 
 # 제외시킬 카테고리
-EXCLUDE_CATEGORIES = {"유아", "만화", "수험서/자격증", "어린이", "외국어", "어린이(초등)"}
+EXCLUDE_CATEGORIES = {"유아", "만화", "수험서/자격증", "어린이", "외국어", "어린이(초등)", "요리"}
 
 def build_book_data(book, driver):
     print("처리 중:", book.get("cmdtName", "제목없음"))
