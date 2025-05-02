@@ -1,0 +1,5 @@
+selenium
+pymysql
+schedule
+python-dotenv
+requests
