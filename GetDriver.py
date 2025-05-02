@@ -1,5 +1,5 @@
 import time
-import requests
+from selenium.common.exceptions import WebDriverException
 import os
 import logging
 from selenium import webdriver
@@ -14,33 +14,42 @@ logging.basicConfig(
 
 def wait_for_selenium(timeout=20):
     selenium_url = os.getenv("SELENIUM_URL", "http://selenium:4444/wd/hub")
-    print(f"Waiting for Selenium {selenium_url} ...", flush=True)
-    for i in range(timeout):
+    print(f"📡 Connecting to WebDriver at {selenium_url}", flush=True)
+
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    for i in range(20):
         try:
-            response = requests.get(selenium_url)
-            if response.status_code == 200:
-                print("Selenium is ready!")
-                return
+            driver = webdriver.Remote(
+                command_executor=selenium_url,
+                options=options
+            )
+            driver.get("https://www.google.com")
+            print("✅ WebDriver 연결 성공", flush=True)
+            return driver
+        except WebDriverException as e:
+            print(f"[{i + 1}s] WebDriver 연결 실패: {e}", flush=True)
+            time.sleep(1)
         except Exception as e:
-            # logging.WARNING(f"connectionError : {e}")
-            logging.warning(f"({i + 1}s) Connection error: {e}")
-        time.sleep(1)
-    raise RuntimeError("Selenium server did not become ready in time.")
+            print(f"[{i + 1}s] ❌ 알 수 없는 에러 발생: {e}", flush=True)
+            time.sleep(1)
+
+    raise RuntimeError("WebDriver를 20초 동안 연결하지 못했습니다.")
 
 def get_driver():
     mode = os.getenv("CRAWLER_MODE", "local")
 
     options = Options()
     options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
     if mode == "docker":
-        wait_for_selenium()
         # Docker에서는 selenium/standalone-chrome으로 접속
-        driver = webdriver.Remote(
-            command_executor= os.getenv("SELENIUM_URL", "http://selenium:4444/wd/hub"),
-            options=options)
-        driver.implicitly_wait(10)
-        return driver
+        return wait_for_selenium()
     else:
         # 로컬에서는 직접 chromedriver 사용
         return webdriver.Chrome(
